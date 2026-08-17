@@ -1,50 +1,209 @@
-const menu=document.querySelector('.menu-toggle'),links=document.querySelector('.nav-links');
-menu?.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',open)});
-document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+/* ============================================================
+   Static Safety Solutions — script.js
+   Navigation, product filtering/search, product modal,
+   WhatsApp enquiries, scroll reveal. No dependencies.
+   ============================================================ */
 
-const productData={
-'Antistatic PVC Mat':{cat:'ESD & CONSUMABLES',intro:'Static-dissipative bench protection for controlled electronics workspaces.',features:['Helps reduce static charge at the workstation','Suitable for ESD-controlled benches and assembly areas','Easy to integrate into existing workstations'],visual:'mat'},
-'Epoxy Flooring':{cat:'ESD & CONSUMABLES',intro:'Durable flooring designed for static-conscious industrial environments.',features:['Continuous floor protection for controlled areas','Built for demanding industrial workflows','Designed as part of a complete ESD-control system'],visual:'floor'},
-'ESD Wrist Strap':{cat:'ESD & CONSUMABLES',intro:'Essential operator grounding for handling sensitive electronic components.',features:['Designed for operator grounding','Ideal for ESD workstations','Simple everyday workstation protection'],visual:'strap'},
-'Antistatic Gloves':{cat:'ESD & CONSUMABLES',intro:'Comfortable handling protection for sensitive components and assemblies.',features:['Helps minimise static-related handling risk','Suitable for precision component work','Comfort-focused everyday protection'],visual:'glove'},
-'ESD Chair':{cat:'ESD & CONSUMABLES',intro:'Ergonomic seating designed for static-controlled work zones.',features:['Supports controlled workstation environments','Ergonomic industrial seating concept','Pairs with ESD flooring and workstation systems'],visual:'chair'},
-'Sticky Mat':{cat:'ESD & CONSUMABLES',intro:'Entrance and clean-area matting for particle-control workflows.',features:['Helps capture dust and particles','Useful at controlled-area entrances','Simple layered workplace hygiene solution'],visual:'sticky'},
-'Antistatic Apparel':{cat:'ESD & CONSUMABLES',intro:'Protective garments for ESD-sensitive production environments.',features:['Designed for controlled electronics areas','Supports operator-focused ESD practices','Pairs with grounding and workstation controls'],visual:'apparel'},
-'Antistatic Cap':{cat:'ESD & CONSUMABLES',intro:'Headwear designed for controlled electronics production areas.',features:['Supports controlled-area apparel requirements','Lightweight operator accessory','Complements antistatic garments'],visual:'cap'},
-'Wrist Bands':{cat:'ESD & CONSUMABLES',intro:'Practical operator grounding accessories for ESD workstations.',features:['Convenient workstation grounding accessory','Designed for regular operator use','Part of a broader grounding strategy'],visual:'band'},
-'Antistatic PU Gloves':{cat:'ESD & CONSUMABLES',intro:'Grip and handling comfort for delicate component work.',features:['Useful for precision handling','Designed around grip and operator comfort','Supports static-conscious assembly workflows'],visual:'pu'},
-'Surface Resistivity Meter':{cat:'ESD & CONSUMABLES',intro:'Measurement equipment for checking surface resistance and static-control performance.',features:['Supports routine surface verification','Useful for ESD programme checks','Helps teams document control conditions'],visual:'meter'},
-'Wristband & Footwear Tester':{cat:'ESD & CONSUMABLES',intro:'Fast verification equipment for operator grounding systems.',features:['Checks wristband and footwear grounding','Useful at controlled-area entrances','Supports routine operator verification'],visual:'tester'},
-'Antistatic Bubble Roll':{cat:'ESD & CONSUMABLES',intro:'Protective packaging material for ESD-sensitive components.',features:['Cushioning for component protection','Designed for ESD-conscious packaging','Useful for storage and transport workflows'],visual:'bubble'},
-'Touch Me Pad':{cat:'ESD & CONSUMABLES',intro:'Convenient static-control accessory for operator discharge.',features:['Simple operator interaction point','Useful at workstations and entrances','Complements a broader ESD-control programme'],visual:'touch'},
-'Insulation Mat':{cat:'ESD & CONSUMABLES',intro:'Robust matting for defined industrial work areas.',features:['Durable industrial surface solution','Useful for defined workspace zones','Designed to integrate with workplace safety planning'],visual:'insulation'},
-'Conductive Super Bins':{cat:'STORAGE SOLUTIONS',intro:'Organised static-safe component storage for production and assembly areas.',features:['Keeps components organised and accessible','Conductive storage concept for ESD-sensitive parts','Ideal for shelves, benches and line-side storage'],visual:'bin'},
-'ESD I Type Rack':{cat:'STORAGE SOLUTIONS',intro:'Modular rack storage for efficient controlled workspaces.',features:['Helps maximise organised storage','Designed for ESD-conscious environments','Useful for component and material organisation'],visual:'rack'},
-'ESD L Type Rack':{cat:'STORAGE SOLUTIONS',intro:'L-type storage designed to organise ESD-sensitive materials efficiently.',features:['Space-efficient industrial storage','Suitable for controlled work areas','Supports organised component access'],visual:'lrack'},
-'ESD Magazine Rack':{cat:'STORAGE SOLUTIONS',intro:'Dedicated magazine storage for organised electronics production materials.',features:['Keeps magazines upright and accessible','Supports production-line organisation','Designed for controlled environments'],visual:'magazine'},
-'SS SMT Reel Trolley':{cat:'STORAGE SOLUTIONS',intro:'Mobile reel organisation for SMT and electronics production workflows.',features:['Mobile reel storage concept','Helps organise production materials','Designed for line-side workflow efficiency'],visual:'reel'},
-'Antistatic PCB Trolley':{cat:'STORAGE SOLUTIONS',intro:'Mobile PCB handling and storage for static-sensitive production environments.',features:['Supports controlled PCB movement','Organises boards between workstations','Useful across electronics manufacturing workflows'],visual:'pcb'},
-'Conductive PP Box':{cat:'STORAGE SOLUTIONS',intro:'Conductive polypropylene storage for ESD-sensitive components.',features:['Reusable component storage','Conductive material concept','Useful for shelves, benches and line-side handling'],visual:'ppbox'},
-'Antistatic Crates':{cat:'STORAGE SOLUTIONS',intro:'Robust antistatic crates for component storage and movement.',features:['Durable reusable container format','Designed for controlled component handling','Useful for warehouse and production workflows'],visual:'crates'},
-'Antistatic Trays':{cat:'STORAGE SOLUTIONS',intro:'Component trays designed for organised, static-conscious handling.',features:['Keeps components organised and visible','Useful for production and inspection','Supports controlled material movement'],visual:'trays'}};
+(function () {
+  'use strict';
 
-const missing=[['ESD L Type Rack','storage','18','L-type rack'],['ESD Magazine Rack','storage','19','Magazine rack'],['SS SMT Reel Trolley','storage','20','SMT reel trolley'],['Antistatic PCB Trolley','storage','21','PCB trolley'],['Conductive PP Box','storage','22','Conductive PP box'],['Antistatic Crates','storage','23','Antistatic crates'],['Antistatic Trays','storage','24','Antistatic trays']];
-const grid=document.querySelector('.product-grid');missing.forEach(([name,category,num,visual])=>{if(!grid||document.querySelector(`[data-name="${name.toLowerCase()}"]`))return;const card=document.createElement('article');card.className='product-card reveal';card.dataset.category=category;card.dataset.name=name.toLowerCase();card.innerHTML=`<div class="product-image image-${visual}"><span>${num}</span><div class="product-art ${visual}-art"></div></div><div class="product-info"><small>STORAGE SOLUTIONS</small><h3>${name}</h3><p>${productData[name].intro}</p><button class="view-details">View details</button><button class="enquire" data-product="${name}">Enquire →</button></div>`;grid.appendChild(card);});
+  var WHATSAPP_NUMBER = '916309981002';
 
-const modal=document.createElement('div');modal.className='product-modal';modal.innerHTML=`<div class="modal-backdrop" data-close></div><div class="modal-panel" role="dialog" aria-modal="true" aria-label="Product details"><button class="modal-close" aria-label="Close">×</button><div class="modal-visual"><div class="modal-visual-art"></div><span class="modal-number"></span></div><div class="modal-content"><small class="modal-cat"></small><h2 class="modal-title"></h2><p class="modal-intro"></p><div class="modal-rule"></div><h3>Key highlights</h3><ul class="modal-features"></ul><button class="modal-enquire">Enquire about this product ↗</button></div></div>`;document.body.appendChild(modal);
-const modalEls={title:modal.querySelector('.modal-title'),cat:modal.querySelector('.modal-cat'),intro:modal.querySelector('.modal-intro'),features:modal.querySelector('.modal-features'),art:modal.querySelector('.modal-visual-art'),number:modal.querySelector('.modal-number')};
-function openProduct(name){const d=productData[name];if(!d)return;modalEls.title.textContent=name;modalEls.cat.textContent=d.cat;modalEls.intro.textContent=d.intro;modalEls.features.innerHTML=d.features.map(x=>`<li>${x}</li>`).join('');modalEls.art.className=`modal-visual-art modal-${d.visual}`;const card=[...document.querySelectorAll('.product-card')].find(x=>x.dataset.name===name.toLowerCase());modalEls.number.textContent=card?.querySelector('.product-image>span')?.textContent||'';modal.classList.add('open');document.body.classList.add('modal-open');modal.querySelector('.modal-close').focus()}
-function closeProduct(){modal.classList.remove('open');document.body.classList.remove('modal-open')}
-modal.addEventListener('click',e=>{if(e.target.matches('[data-close],.modal-close'))closeProduct()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProduct()});
+  /* ---------- Mobile navigation ---------- */
 
-function wireProductButtons(){document.querySelectorAll('.product-card').forEach(card=>{const info=card.querySelector('.product-info'),name=card.querySelector('h3')?.textContent;if(!name||!productData[name]||card.dataset.wired)return;card.dataset.wired='true';const view=card.querySelector('.view-details')||(()=>{const b=document.createElement('button');b.className='view-details';b.textContent='View details';info?.insertBefore(b,info.querySelector('.enquire'));return b})();view.addEventListener('click',()=>openProduct(name));const enquire=card.querySelector('.enquire');enquire?.addEventListener('click',()=>{const msg=`Hello Static Safety Solutions, I am interested in ${name}. Please share details, availability and a quotation.`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank','noopener')});});}
-wireProductButtons();
-modal.querySelector('.modal-enquire').addEventListener('click',()=>{const name=modalEls.title.textContent;const msg=`Hello Static Safety Solutions, I am interested in ${name}. Please share specifications, availability and a quotation.`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank','noopener')});
+  var menuToggle = document.querySelector('.menu-toggle');
+  var navLinks = document.querySelector('.nav-links');
 
-let activeFilter='all';const cards=[...document.querySelectorAll('.product-card')];
-function applyFilters(){const q=(document.querySelector('#productSearch')?.value||'').trim().toLowerCase();cards.forEach(card=>{const categoryOK=activeFilter==='all'||card.dataset.category===activeFilter;const searchOK=!q||card.dataset.name.includes(q);card.classList.toggle('no-match',!(categoryOK&&searchOK));});}
-document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));btn.classList.add('active');activeFilter=btn.dataset.filter;applyFilters()}));
-document.querySelector('#productSearch')?.addEventListener('input',applyFilters);
-const form=document.querySelector('#enquiryForm');form?.addEventListener('submit',e=>{e.preventDefault();const d=new FormData(form);const msg=`Hello Static Safety Solutions,\n\nName: ${d.get('name')}\nCompany: ${d.get('company')||'Not provided'}\nPhone: ${d.get('phone')}\nRequirement: ${d.get('message')}`;window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank','noopener')});
-const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.08});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-applyFilters();
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', function () {
+      var open = navLinks.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      menuToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+    });
+
+    navLinks.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        navLinks.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  /* ---------- WhatsApp helper ---------- */
+
+  function openWhatsApp(message) {
+    window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message), '_blank', 'noopener');
+  }
+
+  /* ---------- Catalogue filters & search ---------- */
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.product-card'));
+  var filterButtons = Array.prototype.slice.call(document.querySelectorAll('.filter'));
+  var searchInput = document.getElementById('productSearch');
+  var countLabel = document.querySelector('.catalog-count');
+  var activeFilter = 'all';
+
+  function updateCount(visible) {
+    if (countLabel) {
+      countLabel.textContent = 'Showing ' + visible + ' of ' + cards.length + ' products';
+    }
+  }
+
+  function applyFilters() {
+    var query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    var visible = 0;
+
+    cards.forEach(function (card) {
+      var categoryOk = activeFilter === 'all' || card.dataset.category === activeFilter;
+      var searchOk = !query || (card.dataset.name || '').indexOf(query) !== -1;
+      var match = categoryOk && searchOk;
+      card.classList.toggle('no-match', !match);
+      if (match) { visible += 1; }
+    });
+
+    updateCount(visible);
+  }
+
+  filterButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filterButtons.forEach(function (b) {
+        var isActive = b === btn;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+      activeFilter = btn.dataset.filter || 'all';
+      applyFilters();
+    });
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', applyFilters);
+  }
+
+  /* ---------- Product modal ---------- */
+
+  var modal = document.getElementById('productModal');
+  var modalImage = document.getElementById('modal-img');
+  var modalCat = document.getElementById('modal-cat');
+  var modalTitle = document.getElementById('modal-title');
+  var modalIntro = document.getElementById('modal-intro');
+  var modalFeatures = document.getElementById('modal-features');
+  var modalEnquire = document.querySelector('.modal-enquire');
+  var currentProduct = '';
+
+  function openProduct(card) {
+    var name = card.querySelector('h3').textContent;
+    var image = card.querySelector('.product-image img');
+    var cat = card.querySelector('.product-cat').textContent;
+    var intro = card.querySelector('.product-info > p').textContent;
+    var features = Array.prototype.slice.call(card.querySelectorAll('.product-features li'))
+      .map(function (li) { return li.textContent; });
+
+    currentProduct = name;
+    modalImage.src = image.getAttribute('src');
+    modalImage.alt = image.getAttribute('alt') || name;
+    modalCat.textContent = cat;
+    modalTitle.textContent = name;
+    modalIntro.textContent = intro;
+    modalFeatures.innerHTML = '';
+    features.forEach(function (f) {
+      var li = document.createElement('li');
+      li.textContent = f;
+      modalFeatures.appendChild(li);
+    });
+
+    if (typeof modal.showModal === 'function') {
+      modal.showModal();
+    } else {
+      modal.setAttribute('open', '');
+    }
+  }
+
+  function closeProduct() {
+    if (typeof modal.close === 'function') {
+      modal.close();
+    } else {
+      modal.removeAttribute('open');
+    }
+  }
+
+  document.querySelectorAll('.btn-details').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      openProduct(btn.closest('.product-card'));
+    });
+  });
+
+  document.querySelectorAll('.btn-enquire').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var product = btn.getAttribute('data-product') || btn.closest('.product-card').querySelector('h3').textContent;
+      openWhatsApp('Hello Static Safety Solutions, I am interested in ' + product + '. Please share details, availability and a quotation.');
+    });
+  });
+
+  var modalClose = modal ? modal.querySelector('.modal-close') : null;
+  if (modalClose) {
+    modalClose.addEventListener('click', closeProduct);
+  }
+
+  if (modalEnquire) {
+    modalEnquire.addEventListener('click', function () {
+      if (currentProduct) {
+        openWhatsApp('Hello Static Safety Solutions, I am interested in ' + currentProduct + '. Please share specifications, availability and a quotation.');
+      }
+    });
+  }
+
+  if (modal && typeof modal.addEventListener === 'function') {
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) { closeProduct(); }
+    });
+  }
+
+  /* ---------- Enquiry form ---------- */
+
+  var form = document.getElementById('enquiryForm');
+
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      var data = new FormData(form);
+      var message =
+        'Hello Static Safety Solutions,\n\n' +
+        'Name: ' + (data.get('name') || '') + '\n' +
+        'Company: ' + (data.get('company') || 'Not provided') + '\n' +
+        'Phone: ' + (data.get('phone') || '') + '\n' +
+        'Requirement: ' + (data.get('message') || '');
+
+      openWhatsApp(message);
+    });
+  }
+
+  /* ---------- Reveal on scroll ---------- */
+
+  var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    revealEls.forEach(function (el) { observer.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('visible'); });
+  }
+
+  /* ---------- Initial state ---------- */
+
+  applyFilters();
+}());
